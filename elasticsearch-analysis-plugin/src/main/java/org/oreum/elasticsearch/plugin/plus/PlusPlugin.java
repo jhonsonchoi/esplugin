@@ -1,4 +1,4 @@
-package org.oreum.lucene.analysis.plus.elasticsearch;
+package org.oreum.elasticsearch.plugin.plus;
 
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.indices.analysis.AnalysisModule.AnalysisProvider;

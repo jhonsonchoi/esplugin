@@ -1,4 +1,4 @@
-package org.oreum.lucene.analysis.plus.elasticsearch;
+package org.oreum.elasticsearch.plugin.plus;
 
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenStream;
