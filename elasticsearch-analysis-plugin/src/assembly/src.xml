@@ -18,7 +18,6 @@
       <useProjectArtifact>true</useProjectArtifact>
       <useTransitiveFiltering>true</useTransitiveFiltering>
       <excludes>
-        <exclude>org.lucee:lucene</exclude>
         <exclude>org.elasticsearch:elasticsearch</exclude>
         <exclude>org.codelibs.elasticsearch.module:analysis-common</exclude>
       </excludes>
