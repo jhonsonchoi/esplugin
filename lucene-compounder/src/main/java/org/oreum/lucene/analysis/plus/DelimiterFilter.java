@@ -222,6 +222,14 @@ public final class DelimiterFilter extends TokenFilter {
 
                 accumPosInc += posIncAttribute.getPositionIncrement();
 
+                String sb = new StringBuilder().append(termBuffer, 0, termLength).toString();
+                if (sb.toUpperCase().equals(sb.toLowerCase())) {
+                    posIncAttribute.setPositionIncrement(accumPosInc);
+                    accumPosInc = 0;
+                    first = false;
+                    return true;
+                }
+
                 iterator.setText(termBuffer, termLength);
                 iterator.next();
 

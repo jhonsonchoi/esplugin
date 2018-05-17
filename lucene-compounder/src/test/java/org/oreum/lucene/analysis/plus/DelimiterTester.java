@@ -39,7 +39,7 @@ public class DelimiterTester extends Analyzer {
     public static void main(String[] args) throws IOException {
 
         Analyzer analyzer = new DelimiterTester();
-        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("start -R- RH9SG end"));
+        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("start -R- RH9SG MF로 변신해 1군 승격 end"));
 
         CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
         OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
