@@ -1,14 +1,13 @@
-package org.oreum.esplugin;
+package org.oreum.lucene.analysis.plus.elasticsearch;
 
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenStream;
-import org.elasticsearch.Version;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.analysis.Analysis;
-import org.oreum.CompounderFilter;
+import org.oreum.lucene.analysis.plus.CompounderFilter;
 
 import java.util.List;
 

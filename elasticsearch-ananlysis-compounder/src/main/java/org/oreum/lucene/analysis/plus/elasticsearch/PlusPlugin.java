@@ -1,4 +1,4 @@
-package org.oreum.esplugin;
+package org.oreum.lucene.analysis.plus.elasticsearch;
 
 import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.elasticsearch.indices.analysis.AnalysisModule.AnalysisProvider;
@@ -10,7 +10,7 @@ import java.util.TreeMap;
 
 import static org.elasticsearch.plugins.AnalysisPlugin.requriesAnalysisSettings;
 
-public class PlusSignPlugin extends Plugin implements AnalysisPlugin {
+public class PlusPlugin extends Plugin implements AnalysisPlugin {
 
     @Override
     public Map<String, AnalysisProvider<TokenFilterFactory>> getTokenFilters() {

@@ -1,4 +1,4 @@
-package org.oreum;
+package org.oreum.lucene.analysis.plus;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,7 +13,6 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.util.ArrayUtil;
 import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.InPlaceMergeSorter;

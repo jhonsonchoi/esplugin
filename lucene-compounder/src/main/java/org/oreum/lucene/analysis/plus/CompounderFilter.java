@@ -1,4 +1,4 @@
-package org.oreum;
+package org.oreum.lucene.analysis.plus;
 
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenFilter;
@@ -8,7 +8,6 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 
 public final class CompounderFilter extends TokenFilter {
     private final CharArraySet words;
