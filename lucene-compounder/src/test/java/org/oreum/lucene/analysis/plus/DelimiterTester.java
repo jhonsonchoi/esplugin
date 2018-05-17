@@ -12,21 +12,14 @@ import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Tester extends Analyzer {
-
-    private final CharArraySet words;
+public class DelimiterTester extends Analyzer {
 
     private final byte[] charTypeTable;
     private final int flags;
     private final CharArraySet protoWords;
 
 
-    public Tester() {
-        Set<String> s = new HashSet<>();
-        s.add("onetwo");
-        s.add("twothree");
-        words = new CharArraySet(s, false);
-
+    public DelimiterTester() {
         charTypeTable = DelimiterIterator.DEFAULT_WORD_DELIM_TABLE;
         flags = DelimiterFilter.GENERATE_WORD_PARTS
                 | DelimiterFilter.GENERATE_NUMBER_PARTS
@@ -35,19 +28,7 @@ public class Tester extends Analyzer {
                 | DelimiterFilter.SPLIT_ON_NUMERICS
                 | DelimiterFilter.STEM_ENGLISH_POSSESSIVE;
         protoWords = null;
-
-//        System.out.println(words.size());
     }
-
-
-/*
-    @Override
-    protected TokenStreamComponents createComponents(String s) {
-        final Tokenizer source = new WhitespaceTokenizer();
-        TokenStream result = new CompounderFilter(source, words);
-        return new TokenStreamComponents(source, result);
-    }
-*/
 
     protected TokenStreamComponents createComponents(String s) {
         final Tokenizer source = new WhitespaceTokenizer();
@@ -57,9 +38,9 @@ public class Tester extends Analyzer {
 
     public static void main(String[] args) throws IOException {
 
-        Analyzer analyzer = new Tester();
+        Analyzer analyzer = new DelimiterTester();
         TokenStream ts = analyzer.tokenStream("myfield", new StringReader("start -R- RH9SG end"));
-//        OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
+
         CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
         OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
         PositionIncrementAttribute posIncAtt = ts.addAttribute(PositionIncrementAttribute.class);
