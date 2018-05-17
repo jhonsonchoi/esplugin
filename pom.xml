@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>elasticsearch-ananlysis-compounder</module>
+        <module>elasticsearch-analysis-compounder</module>
         <module>lucene-compounder</module>
     </modules>
 

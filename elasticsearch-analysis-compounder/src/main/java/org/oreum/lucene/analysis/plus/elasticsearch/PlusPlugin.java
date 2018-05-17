@@ -15,7 +15,6 @@ public class PlusPlugin extends Plugin implements AnalysisPlugin {
     @Override
     public Map<String, AnalysisProvider<TokenFilterFactory>> getTokenFilters() {
         Map<String, AnalysisProvider<TokenFilterFactory>> filters = new TreeMap<>();
-        filters.put("oreum", requriesAnalysisSettings(CompounderTokenFilterFactory::new));
         filters.put("catenator", requriesAnalysisSettings(CompounderTokenFilterFactory::new));
         filters.put("delimiter", DelimiterTokenFilterFactory::new);
         return filters;
