@@ -25,6 +25,7 @@ public class CompounderTester extends Analyzer {
         s.add("onetwothree");
         s.add("threefour");
         s.add("sixseven");
+        s.add("남성구스다운");
         words = new CharArraySet(s, false);
     }
 
@@ -39,7 +40,7 @@ public class CompounderTester extends Analyzer {
     public static void main(String[] args) throws IOException {
 
         Analyzer analyzer = new CompounderTester();
-        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("zero one two three four five six seven "));
+        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("zero one two three four five six seven 남성 구스다운"));
 //        OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
         CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
         OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
