@@ -156,7 +156,7 @@ public final class DelimiterFilter extends TokenFilter {
 
     // used for concatenating runs of similar typed subwords (word,number)
     private final WordDelimiterConcatenation concat = new WordDelimiterConcatenation();
-    // number of subwords last output by concat.
+    // number of subwords last tryOutput by concat.
     private int lastConcatCount = 0;
 
     // used for catenate all
@@ -174,9 +174,9 @@ public final class DelimiterFilter extends TokenFilter {
     // this is a synonym and don't adjust the offsets.
     private boolean hasIllegalOffsets = false;
 
-    // for a run of the same subword type within a word, have we output anything?
+    // for a run of the same subword type within a word, have we tryOutput anything?
     private boolean hasOutputToken = false;
-    // when preserve original is on, have we output any token following it?
+    // when preserve original is on, have we tryOutput any token following it?
     // this token must have posInc=0!
     private boolean hasOutputFollowingOriginal = false;
 
@@ -266,7 +266,7 @@ public final class DelimiterFilter extends TokenFilter {
                 }
             }
 
-            // at the end of the string, output any concatenations
+            // at the end of the string, tryOutput any concatenations
             if (iterator.end == DelimiterIterator.DONE) {
                 if (!concat.isEmpty()) {
                     if (flushConcatenation(concat)) {
@@ -276,7 +276,7 @@ public final class DelimiterFilter extends TokenFilter {
                 }
 
                 if (!concatAll.isEmpty()) {
-                    // only if we haven't output this same combo above!
+                    // only if we haven't tryOutput this same combo above!
                     if (concatAll.subwordCount > lastConcatCount) {
                         concatAll.writeAndClear();
                         buffer();
@@ -305,7 +305,7 @@ public final class DelimiterFilter extends TokenFilter {
                 continue;
             }
 
-            // word surrounded by delimiters: always output
+            // word surrounded by delimiters: always tryOutput
             if (iterator.isSingleWord()) {
                 generatePart(true);
                 iterator.next();
@@ -341,7 +341,7 @@ public final class DelimiterFilter extends TokenFilter {
                 concatenate(concatAll);
             }
 
-            // if we should output the word or number part
+            // if we should tryOutput the word or number part
             if (shouldGenerateParts(wordType)) {
                 generatePart(false);
                 buffer();

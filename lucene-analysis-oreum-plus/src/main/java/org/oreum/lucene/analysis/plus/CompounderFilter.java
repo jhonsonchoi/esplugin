@@ -21,6 +21,7 @@ public final class CompounderFilter extends TokenFilter {
     private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
     private State state;
     private boolean nomore;
+    private int max = 3;
 
     public CompounderFilter(TokenStream input, CharArraySet words) {
         super(input);
@@ -32,38 +33,24 @@ public final class CompounderFilter extends TokenFilter {
         while (true) {
             if (nomore) {
                 if (bufferedLen > 0) { // exist
-                    if (outputAll()) { // compound
+                    if (tryOutput()) { // compound
                         return true;
-                    } else {
-                        continue;
                     }
                 } else {
                     return false;
                 }
-            }
-
-            if (bufferedLen < 2) {
-                if (input.incrementToken()) {
-                    buffer();
-                } else {
-                    nomore = true;
-                }
             } else {
-                String compound = getBufferString();
-
-                if (words.contains(compound)) { // exist
+                if (bufferedLen < max) {
                     if (input.incrementToken()) {
                         buffer();
                     } else {
                         nomore = true;
                     }
                 } else {
-                    // output all - 1
-                    if (output()) { // compound
+                    if (tryOutput()) { // compound
                         return true;
                     }
                 }
-
             }
         }
     }
@@ -85,6 +72,7 @@ public final class CompounderFilter extends TokenFilter {
     private int posInc[] = new int[8];
     private int bufferedLen = 0;
     private String term[] = new String[8];
+    private boolean isCompoundPart[] = new boolean[8];
     private boolean printed[] = new boolean[8];
 
     private void buffer() {
@@ -94,94 +82,114 @@ public final class CompounderFilter extends TokenFilter {
             startOff = Arrays.copyOf(startOff, newSize);
             posInc = Arrays.copyOf(posInc, newSize);
             term = Arrays.copyOf(term, newSize);
-            printed = Arrays.copyOf(printed, newSize);
+            isCompoundPart = Arrays.copyOf(isCompoundPart, newSize);
         }
         startOff[bufferedLen] = offsetAtt.startOffset();
         posInc[bufferedLen] = posIncAtt.getPositionIncrement();
         buffered[bufferedLen] = captureState();
         term[bufferedLen] = termAtt.toString();
+        isCompoundPart[bufferedLen] = false;
         printed[bufferedLen] = false;
         bufferedLen++;
     }
 
-    String getBufferString() {
+    private void checkCompound() {
+        for (int i = 0; i < bufferedLen; i++) {
+            isCompoundPart[i] = false;
+        }
+        if (bufferedLen > 1) {
+            // check compound
+            for (int i = bufferedLen; i > 0; i--) {
+                String compound = getBufferString(i);
+
+                if (words.contains(compound)) { // exist
+                    for (int j = 0; j < i; j++) {
+                        isCompoundPart[j] = true;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    String getBufferString(int length) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < bufferedLen; i++) sb.append(term[i]);
+        for (int i = 0; i < length; i++) sb.append(term[i]);
         return sb.toString();
     }
 
-    boolean output() {
+    int compoundLength() {
+        int length = 0;
+        for (int i = 0; i < bufferedLen; i++) {
+            if (isCompoundPart[i]) length++;
+        }
+        return length;
+    }
+
+    int printedLength() {
+        int length = 0;
+        for (int i = 0; i < bufferedLen; i++) {
+            if (printed[i]) length++;
+        }
+        return length;
+    }
+
+    void shift() {
+        bufferedLen--;
+
+        for (int i = 0; i < bufferedLen; i++) {
+            startOff[i] = startOff[i + 1];
+            posInc[i] = posInc[i + 1];
+            buffered[i] = buffered[i + 1];
+            term[i] = term[i + 1];
+            isCompoundPart[i] = isCompoundPart[i + 1];
+            printed[i] = printed[i + 1];
+        }
+    }
+
+    boolean tryOutput() {
 
         if (bufferedLen == 0) return false; // error
-        if (bufferedLen == 1) {
-            if (!printed[0]) {
+
+        checkCompound();
+
+        if (!isCompoundPart[0]) {
+            if (printed[0]) {
+                shift();
+
+                return false;
+            } else {
+                clearAttributes();
                 termAtt.setEmpty();
                 termAtt.append(term[0]);
 
                 offsetAtt.setOffset(0, 0);
 
-                bufferedLen = 0;
+                shift();
+
                 return true;
-            } else {
-                bufferedLen = 0;
-                return false;
             }
-        }
-        if (bufferedLen == 2) {
-            if (printed[0]) {
-
-                startOff[0] = startOff[1];
-                posInc[0] = posInc[1];
-                buffered[0] = buffered[1];
-                term[0] = term[1];
-                printed[0] = printed[1];
-
-                bufferedLen = 1;
-
-                return false;
-            } else {
+        } else {
+            if (compoundLength() > printedLength()) {
+                clearAttributes();
                 termAtt.setEmpty();
-                termAtt.append(term[0]);
+                termAtt.append(getBufferString(compoundLength()));
 
-                offsetAtt.setOffset(0,0);
+                offsetAtt.setOffset(0, 0);
 
-                startOff[0] = startOff[1];
-                posInc[0] = posInc[1];
-                buffered[0] = buffered[1];
-                term[0] = term[1];
-                printed[0] = printed[1];
+                for (int i = 0; i < compoundLength(); i++) {
+                    printed[i] = true;
+                }
 
-                bufferedLen = 1;
+                shift();
 
                 return true;
+            } else {
+                shift();
+
+                return false;
             }
         }
-        if (bufferedLen > 2) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bufferedLen - 1; i++) sb.append(term[i]);
-
-            termAtt.setEmpty();
-            termAtt.append(sb.toString());
-
-            offsetAtt.setOffset(0,0);
-
-            startOff[0] = startOff[bufferedLen - 2];
-            posInc[0] = posInc[bufferedLen - 2];
-            buffered[0] = buffered[bufferedLen - 2];
-            term[0] = term[bufferedLen - 2];
-            printed[0] = true;
-            startOff[1] = startOff[bufferedLen - 1];
-            posInc[1] = posInc[bufferedLen - 1];
-            buffered[1] = buffered[bufferedLen - 1];
-            term[1] = term[bufferedLen - 1];
-            printed[1] = printed[bufferedLen - 1];
-
-            bufferedLen = 2;
-
-            return true;
-        }
-
-        return false;
     }
 
     boolean outputAll() {

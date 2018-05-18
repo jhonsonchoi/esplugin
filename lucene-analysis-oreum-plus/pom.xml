@@ -10,7 +10,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>lucene-analysis</artifactId>
+    <artifactId>lucene-analysis-oreum-plus</artifactId>
 
     <dependencies>
         <dependency>
