@@ -10,8 +10,8 @@
     <version>1.0.0</version>
 
     <modules>
-        <module>elasticsearch-analysis-oreum-plus-plugin</module>
-        <module>lucene-analysis-oreum-plus</module>
+        <module>oreum-plus-elasticsearch-plugin</module>
+        <module>oreum-plus-lucene-analysis</module>
     </modules>
 
 
