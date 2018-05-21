@@ -7,10 +7,11 @@
     <parent>
         <artifactId>esplugin</artifactId>
         <groupId>org.oreum.elasticsearch</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>lucene-analysis-oreum-plus</artifactId>
+    <version>1.0.0</version>
 
     <dependencies>
         <dependency>
