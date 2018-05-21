@@ -1,4 +1,4 @@
-package org.oreum.plus.lucene.analysis;
+package org.oreum.plus.lucene_analysis;
 
 
 /**

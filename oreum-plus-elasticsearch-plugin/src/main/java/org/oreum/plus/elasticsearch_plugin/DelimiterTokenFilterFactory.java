@@ -7,8 +7,8 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenFilterFactory;
 import org.elasticsearch.index.analysis.Analysis;
-import org.oreum.plus.lucene.analysis.DelimiterFilter;
-import org.oreum.plus.lucene.analysis.DelimiterIterator;
+import org.oreum.plus.lucene_analysis.DelimiterFilter;
+import org.oreum.plus.lucene_analysis.DelimiterIterator;
 
 import java.util.Collection;
 import java.util.List;
