@@ -1,6 +1,5 @@
 package org.oreum.plus.lucene_analysis;
 
-
 /**
  * A BreakIterator-like API for iterating over subwords in text, according to WordDelimiterGraphFilter rules.
  * @lucene.internal

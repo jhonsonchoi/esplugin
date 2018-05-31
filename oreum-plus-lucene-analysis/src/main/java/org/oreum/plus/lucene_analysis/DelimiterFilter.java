@@ -223,7 +223,7 @@ public final class DelimiterFilter extends TokenFilter {
                 accumPosInc += posIncAttribute.getPositionIncrement();
 
                 String sb = new StringBuilder().append(termBuffer, 0, termLength).toString();
-                if (sb.toUpperCase().equals(sb.toLowerCase())) {
+                if (sb.toUpperCase().equals(sb.toLowerCase()) || sb.indexOf('-') > -1) {
                     posIncAttribute.setPositionIncrement(accumPosInc);
                     accumPosInc = 0;
                     first = false;

@@ -17,6 +17,7 @@ public class PlusPlugin extends Plugin implements AnalysisPlugin {
         Map<String, AnalysisProvider<TokenFilterFactory>> filters = new TreeMap<>();
         filters.put("catenator", requriesAnalysisSettings(CompounderTokenFilterFactory::new));
         filters.put("delimiter", DelimiterTokenFilterFactory::new);
+        filters.put("plus_coder", CoderTokenFilterFactory::new);
         return filters;
     }
 }
