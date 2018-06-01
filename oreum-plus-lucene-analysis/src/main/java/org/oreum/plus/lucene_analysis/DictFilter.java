@@ -1,5 +1,6 @@
 package org.oreum.plus.lucene_analysis;
 
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -8,22 +9,24 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 
 import java.io.IOException;
+import java.util.Iterator;
 
-public final class CoderFilter extends TokenFilter {
-
+public final class DictFilter extends TokenFilter {
+    private final CharArraySet words;
     private final CharTermAttribute termAttribute = addAttribute(CharTermAttribute.class);
-    private final OffsetAttribute offsetAttribute = addAttribute(OffsetAttribute.class);
-    private final PositionIncrementAttribute posIncAttribute = addAttribute(PositionIncrementAttribute.class);
-    private final TypeAttribute typeAttribute = addAttribute(TypeAttribute.class);
+    private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
+    private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+    private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
 
     // used for iterating word delimiter breaks
-    private final CoderIterator iterator;
+    private final DictIterator iterator;
 
     private boolean hasSavedState = false;
 
-    public CoderFilter(TokenStream in) {
-        super(in);
-        this.iterator = new CoderIterator();
+    public DictFilter(TokenStream input, CharArraySet words) {
+        super(input);
+        this.words = words;
+        this.iterator = new DictIterator();
     }
 
     @Override
@@ -43,13 +46,27 @@ public final class CoderFilter extends TokenFilter {
                 // - 가 포함된 코드 패턴인가 검사해서 포함되지 않은 경우는 그대로 리턴
 
                 String sb = new StringBuilder().append(termBuffer, 0, termLength).toString();
-                if (sb.indexOf('-') < 0) {
+
+                boolean in = false;
+                String prefix = null;
+                Iterator wordsIt = words.iterator();
+
+                while (wordsIt.hasNext()) {
+                    prefix = new StringBuilder().append((char[]) wordsIt.next()).toString();
+
+                    if (sb.startsWith(prefix)) {
+                        in = true;
+                        break;
+                    }
+                }
+
+                if (!in) {
                     return true;
                 }
 
                 // - 가 포함된 경우
 
-                iterator.setText(termAttribute.toString());
+                iterator.setText(termAttribute.toString(), prefix);
 
                 if (!iterator.hasNext()) {
                     continue;
@@ -75,13 +92,13 @@ public final class CoderFilter extends TokenFilter {
     }
 
     @Override
-    public void reset() throws IOException {
-        super.reset();
-        hasSavedState = false;
+    public void end() throws IOException {
+        super.end();
     }
 
     @Override
-    public void end() throws IOException {
-        super.end();
+    public void reset() throws IOException {
+        super.reset();
+        hasSavedState = false;
     }
 }

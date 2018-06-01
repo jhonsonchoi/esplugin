@@ -18,6 +18,8 @@ public class PlusPlugin extends Plugin implements AnalysisPlugin {
         filters.put("catenator", requriesAnalysisSettings(CompounderTokenFilterFactory::new));
         filters.put("delimiter", DelimiterTokenFilterFactory::new);
         filters.put("plus_coder", CoderTokenFilterFactory::new);
+        filters.put("plus_stop", TypeBasedStopTokenFilterFactory::new);
+        filters.put("plus_dict", requriesAnalysisSettings(DictTokenFilterFactory::new));
         return filters;
     }
 }

@@ -6,10 +6,9 @@ import java.util.List;
 
 /**
  * A BreakIterator-like API for iterating over subwords in text, according to WordDelimiterGraphFilter rules.
- *
  * @lucene.internal
  */
-public final class CoderIterator {
+public final class DictIterator {
 
     String text;
     Iterator<String> it;
@@ -17,7 +16,7 @@ public final class CoderIterator {
     /**
      * Create a new WordDelimiterIterator operating with the supplied rules.
      */
-    CoderIterator() {
+    DictIterator() {
     }
 
     /**
@@ -38,39 +37,16 @@ public final class CoderIterator {
      *
      * @param text New text
      */
-    void setText(String text) {
+    void setText(String text, String prefix) {
         this.text = text;
-        this.it = split(text);
+        this.it = split(text, prefix);
     }
 
-
-    Iterator<String> split(String s) {
+    Iterator<String> split(String s, String prefix) {
         List<String> res = new ArrayList<>();
 
-        String[] splits = s.split("-");
-
-        for (int i = 0; i < splits.length; i++) {
-            if (i > 0) res.add("-");
-            res.add(splits[i]);
-        }
-
-        for (int i = 0; i < splits.length; i++) {
-            res.add(splits[i]);
-        }
-
-        if (splits.length > 2) {
-            for (int i = 0; i < splits.length - 1; i++) {
-                res.add(splits[i] + "-" + splits[i + 1]);
-                res.add(splits[i] + splits[i + 1]);
-            }
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < splits.length; i++) {
-            sb.append(splits[i]);
-        }
-
-        res.add(sb.toString());
+        res.add(prefix);
+        res.add(s.substring(prefix.length()));
 
         return res.iterator();
     }
