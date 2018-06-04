@@ -12,9 +12,12 @@ import org.oreum.plus.lucene_analysis.CompounderFilter;
 import java.util.List;
 
 public class CompounderTokenFilterFactory extends AbstractTokenFilterFactory {
-    private final CharArraySet compoundWords;
     private static final String COMPOUND_WORDS_KEY = "compound_words";
     private static final String COMPOUND_WORDS_PATH_KEY = COMPOUND_WORDS_KEY + "_path";
+    private static final String PRESERVE_ORIGINAL = "preserve_original";
+
+    private final CharArraySet compoundWords;
+    private final boolean preserveOriginal;
 
     CompounderTokenFilterFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
         super(indexSettings, name, settings);
@@ -26,10 +29,11 @@ public class CompounderTokenFilterFactory extends AbstractTokenFilterFactory {
                 + COMPOUND_WORDS_PATH_KEY + "` to be configured");
         }
         this.compoundWords = Analysis.getWordSet(env, indexSettings.getIndexVersionCreated(), settings, COMPOUND_WORDS_KEY);
+        this.preserveOriginal = settings.getAsBoolean(PRESERVE_ORIGINAL, false);
     }
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new CompounderFilter(tokenStream, compoundWords);
+        return new CompounderFilter(tokenStream, compoundWords, preserveOriginal);
     }
 }

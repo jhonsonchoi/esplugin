@@ -27,6 +27,7 @@ public class CompounderTester extends Analyzer {
         s.add("sixseven");
         s.add("남성구스다운");
         s.add("구스다운");
+        s.add("일반세탁기");
         words = new CharArraySet(s, false);
     }
 
@@ -34,14 +35,14 @@ public class CompounderTester extends Analyzer {
     @Override
     protected TokenStreamComponents createComponents(String s) {
         final Tokenizer source = new WhitespaceTokenizer();
-        TokenStream result = new CompounderFilter(source, words);
+        TokenStream result = new CompounderFilter(source, words, false);
         return new TokenStreamComponents(source, result);
     }
 
     public static void main(String[] args) throws IOException {
 
         Analyzer analyzer = new CompounderTester();
-        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("zero one two three four five six seven 남성 구스 다운"));
+        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("zero one two three four five six seven 남성 구스 다운 세탁기 일반 세탁기"));
 //        OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
         CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
         OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);

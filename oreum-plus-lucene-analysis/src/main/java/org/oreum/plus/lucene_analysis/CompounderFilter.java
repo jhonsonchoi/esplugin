@@ -15,23 +15,31 @@ import java.util.Arrays;
 
 public final class CompounderFilter extends TokenFilter {
     private final CharArraySet words;
+    private final boolean preserveOriginal;
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
     private final TypeAttribute typeAtt = addAttribute(TypeAttribute.class);
     private State state;
+    // 업스트림에 토큰이 남아 있는가 여부
     private boolean nomore;
     private int max = 3;
 
-    public CompounderFilter(TokenStream input, CharArraySet words) {
+    public CompounderFilter(TokenStream input, CharArraySet words, boolean preserveOriginal) {
         super(input);
         this.words = words;
+        this.preserveOriginal = preserveOriginal;
     }
 
     @Override
     public boolean incrementToken() throws IOException {
         while (true) {
+
+            // 업스트림에 토큰이 없는 경우, 버퍼에 남아 있는 토큰만 처리
+            // 업스트림에 토큰이 있는 경우, 버퍼가 가득 차지 않은 경우, 버퍼에 넣어 둠. 버퍼가 가득 찬 경우, 다운스트림으로 토큰을 흘려 보냄.
+
             if (nomore) {
+                // 버퍼에 남아 있는 토큰이 있는가 체크
                 if (bufferedLen > 0) { // exist
                     if (tryOutput()) { // compound
                         return true;
@@ -41,6 +49,7 @@ public final class CompounderFilter extends TokenFilter {
                 }
             } else {
                 if (bufferedLen < max) {
+                    // 업스트림에 토큰이 있으면 버퍼에 넣어 둠.
                     if (input.incrementToken()) {
                         buffer();
                     } else {
@@ -147,6 +156,13 @@ public final class CompounderFilter extends TokenFilter {
         }
     }
 
+    /**
+     * 복합어를 만들 수 있는가 체크
+     *
+     * 복합어 구성 토큰이 아닌 경우, 토큰을 흘려 보냄.
+     *
+     * @return 토큰이 있는 경우, true. 토큰이 없는 경우, false.
+     */
     boolean tryOutput() {
 
         if (bufferedLen == 0) return false; // error
@@ -154,10 +170,24 @@ public final class CompounderFilter extends TokenFilter {
         checkCompound();
 
         if (!isCompoundPart[0]) {
-            if (printed[0]) {
-                shift();
+            // 복합어에 사용되는 토큰이 아니면
 
-                return false;
+            if (printed[0]) {
+                if (this.preserveOriginal) {
+                    clearAttributes();
+                    termAtt.setEmpty();
+                    termAtt.append(term[0]);
+
+                    offsetAtt.setOffset(0, 0);
+
+                    shift();
+
+                    return true;
+                } else {
+                    shift();
+
+                    return false;
+                }
             } else {
                 clearAttributes();
                 termAtt.setEmpty();
@@ -170,7 +200,12 @@ public final class CompounderFilter extends TokenFilter {
                 return true;
             }
         } else {
+            // 복합어에 사용되는 토큰이면
+
             if (compoundLength() > printedLength()) {
+
+                // 새로운 복합어이면
+
                 clearAttributes();
                 termAtt.setEmpty();
                 termAtt.append(getBufferString(compoundLength()));
@@ -181,13 +216,28 @@ public final class CompounderFilter extends TokenFilter {
                     printed[i] = true;
                 }
 
-                shift();
+//                shift();
 
                 return true;
             } else {
-                shift();
 
-                return false;
+                // 새로운 복합어가 아니면,
+
+                if (this.preserveOriginal) {
+                    clearAttributes();
+                    termAtt.setEmpty();
+                    termAtt.append(term[0]);
+
+                    offsetAtt.setOffset(0, 0);
+
+                    shift();
+
+                    return true;
+                } else {
+                    shift();
+
+                    return false;
+                }
             }
         }
     }
