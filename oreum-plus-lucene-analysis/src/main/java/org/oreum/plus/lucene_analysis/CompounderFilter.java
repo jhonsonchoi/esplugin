@@ -102,6 +102,9 @@ public final class CompounderFilter extends TokenFilter {
         bufferedLen++;
     }
 
+    /**
+     * 복합어가 되는가 확인해서, 복합어인 경우, 복합어 파트 표시
+     */
     private void checkCompound() {
         for (int i = 0; i < bufferedLen; i++) {
             isCompoundPart[i] = false;
@@ -242,37 +245,4 @@ public final class CompounderFilter extends TokenFilter {
         }
     }
 
-    boolean outputAll() {
-
-        if (bufferedLen == 0) return false; // error
-        if (bufferedLen == 1) {
-            if (!printed[0]) {
-                termAtt.setEmpty();
-                termAtt.append(term[0]);
-
-                offsetAtt.setOffset(0, 0);
-
-                bufferedLen = 0;
-                return true;
-            } else {
-                bufferedLen = 0;
-                return false;
-            }
-        }
-        if (bufferedLen > 1) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < bufferedLen; i++) sb.append(term[i]);
-
-            termAtt.setEmpty();
-            termAtt.append(sb.toString());
-
-            offsetAtt.setOffset(0,0);
-
-            bufferedLen = 0;
-
-            return true;
-        }
-
-        return false;
-    }
 }
