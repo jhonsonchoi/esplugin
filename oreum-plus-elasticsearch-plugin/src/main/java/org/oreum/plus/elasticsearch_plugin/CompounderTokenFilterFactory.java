@@ -34,6 +34,6 @@ public class CompounderTokenFilterFactory extends AbstractTokenFilterFactory {
 
     @Override
     public TokenStream create(TokenStream tokenStream) {
-        return new CompounderFilter(tokenStream, compoundWords, preserveOriginal);
+        return new CompounderFilter(tokenStream, compoundWords);
     }
 }

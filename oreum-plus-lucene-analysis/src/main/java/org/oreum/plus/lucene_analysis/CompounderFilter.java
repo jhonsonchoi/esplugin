@@ -15,7 +15,6 @@ import java.util.Arrays;
 
 public final class CompounderFilter extends TokenFilter {
     private final CharArraySet words;
-    private final boolean preserveOriginal;
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final PositionIncrementAttribute posIncAtt = addAttribute(PositionIncrementAttribute.class);
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
@@ -25,10 +24,9 @@ public final class CompounderFilter extends TokenFilter {
     private boolean nomore;
     private int max = 3;
 
-    public CompounderFilter(TokenStream input, CharArraySet words, boolean preserveOriginal) {
+    public CompounderFilter(TokenStream input, CharArraySet words) {
         super(input);
         this.words = words;
-        this.preserveOriginal = preserveOriginal;
     }
 
     @Override
@@ -173,21 +171,9 @@ public final class CompounderFilter extends TokenFilter {
             // 복합어에 사용되는 토큰이 아니면
 
             if (printed[0]) {
-                if (this.preserveOriginal) {
-                    clearAttributes();
-                    termAtt.setEmpty();
-                    termAtt.append(term[0]);
+                shift();
 
-                    offsetAtt.setOffset(0, 0);
-
-                    shift();
-
-                    return true;
-                } else {
-                    shift();
-
-                    return false;
-                }
+                return false;
             } else {
                 clearAttributes();
                 termAtt.setEmpty();
@@ -216,28 +202,16 @@ public final class CompounderFilter extends TokenFilter {
                     printed[i] = true;
                 }
 
-//                shift();
+                shift();
 
                 return true;
             } else {
 
                 // 새로운 복합어가 아니면,
 
-                if (this.preserveOriginal) {
-                    clearAttributes();
-                    termAtt.setEmpty();
-                    termAtt.append(term[0]);
+                shift();
 
-                    offsetAtt.setOffset(0, 0);
-
-                    shift();
-
-                    return true;
-                } else {
-                    shift();
-
-                    return false;
-                }
+                return false;
             }
         }
     }
