@@ -17,13 +17,15 @@ public final class CoderFilter extends TokenFilter {
     private final TypeAttribute typeAttribute = addAttribute(TypeAttribute.class);
 
     // used for iterating word delimiter breaks
-    private final CoderIterator iterator;
+    private final CoderIterator flIterator;
+    private final CoderIterator slIterator;
 
     private boolean hasSavedState = false;
 
     public CoderFilter(TokenStream in) {
         super(in);
-        this.iterator = new CoderIterator();
+        this.flIterator = new FLCoderIterator();
+        this.slIterator = new SLCoderIterator();
     }
 
     @Override
@@ -32,6 +34,16 @@ public final class CoderFilter extends TokenFilter {
             if (!hasSavedState) {
                 // 업스트림에 토큰이 더이상 없으면 끝
                 if (!input.incrementToken()) {
+                    if (slIterator.hasNext()) {
+                        String t = slIterator.next();
+
+                        termAttribute.setEmpty();
+                        termAttribute.append(t);
+
+                        typeAttribute.setType("mariner");
+
+                        return true;
+                    }
                     return false;
                 }
 
@@ -49,9 +61,10 @@ public final class CoderFilter extends TokenFilter {
 
                 // - 가 포함된 경우
 
-                iterator.setText(termAttribute.toString());
+                flIterator.setText(termAttribute.toString());
+                slIterator.setText(termAttribute.toString());
 
-                if (!iterator.hasNext()) {
+                if (!flIterator.hasNext()) {
                     continue;
                 }
 
@@ -60,12 +73,12 @@ public final class CoderFilter extends TokenFilter {
             }
 
             // at the end of the string, tryOutput any concatenations
-            if (!iterator.hasNext()) {
+            if (!flIterator.hasNext()) {
                 hasSavedState = false;
                 continue;
             }
 
-            String t = iterator.next();
+            String t = flIterator.next();
 
             termAttribute.setEmpty();
             termAttribute.append(t);

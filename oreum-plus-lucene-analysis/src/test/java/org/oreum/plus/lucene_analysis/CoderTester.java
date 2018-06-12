@@ -1,6 +1,7 @@
 package org.oreum.plus.lucene_analysis;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
@@ -14,19 +15,31 @@ import java.io.StringReader;
 
 public class CoderTester extends Analyzer {
 
+    private final byte[] charTypeTable;
+    private final int flags;
+    private final CharArraySet protoWords;
+
     public CoderTester() {
+        charTypeTable = DelimiterIterator.DEFAULT_WORD_DELIM_TABLE;
+        flags = DelimiterFilter.GENERATE_WORD_PARTS
+                | DelimiterFilter.GENERATE_NUMBER_PARTS
+                | DelimiterFilter.SPLIT_ON_CASE_CHANGE
+                | DelimiterFilter.PRESERVE_ORIGINAL
+                | DelimiterFilter.SPLIT_ON_NUMERICS
+                | DelimiterFilter.STEM_ENGLISH_POSSESSIVE;
+        protoWords = null;
     }
 
     protected TokenStreamComponents createComponents(String s) {
         final Tokenizer source = new WhitespaceTokenizer();
-        TokenStream result = new CoderFilter(source);
+        TokenStream result = new DelimiterFilter(new CoderFilter(source), charTypeTable, flags, protoWords);
         return new TokenStreamComponents(source, result);
     }
 
     public static void main(String[] args) throws IOException {
 
         Analyzer analyzer = new CoderTester();
-        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("ab-c-3"));
+        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("pre nt900x5t-x716a-zz10 post"));
 
         CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
         OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
@@ -41,10 +54,10 @@ public class CoderTester extends Analyzer {
 //                System.out.println("token" + ts.reflectAsString(true));
 
                 System.out.println(termAtt.toString());
-                System.out.println("token start offset: " + offsetAtt.startOffset());
-                System.out.println("  token end offset: " + offsetAtt.endOffset());
-                System.out.println("    token position: " + position);
-                System.out.println("        token type: " + typeAttribute.type());
+                System.out.print("\t  offset: " + offsetAtt.startOffset() + "," + offsetAtt.endOffset());
+                System.out.print("\tposition: " + position);
+                System.out.print("\t    type: " + typeAttribute.type());
+                System.out.println();
 
                 position += posIncAtt.getPositionIncrement();
             }

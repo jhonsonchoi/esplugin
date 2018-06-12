@@ -35,7 +35,7 @@ public class CompounderTester extends Analyzer {
     @Override
     protected TokenStreamComponents createComponents(String s) {
         final Tokenizer source = new WhitespaceTokenizer();
-        TokenStream result = new CompounderFilter(source, words, false);
+        TokenStream result = new CompounderFilter(source, words);
         return new TokenStreamComponents(source, result);
     }
 

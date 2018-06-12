@@ -212,17 +212,27 @@ public final class DelimiterFilter extends TokenFilter {
     public boolean incrementToken() throws IOException {
         while (true) {
             if (!hasSavedState) {
-                // process a new input word
+                // 업스트림에 토큰이 없으면, 처리 끝
                 if (!input.incrementToken()) {
                     return false;
+                }
+
+                accumPosInc += posIncAttribute.getPositionIncrement();
+
+                // 분해처리가 필요 없는 타입의 경우, 그대로 통과
+                if (typeAttribute.type().equals("mariner")) {
+                    posIncAttribute.setPositionIncrement(accumPosInc);
+                    accumPosInc = 0;
+                    first = false;
+                    return true;
                 }
 
                 int termLength = termAttribute.length();
                 char[] termBuffer = termAttribute.buffer();
 
-                accumPosInc += posIncAttribute.getPositionIncrement();
-
                 String sb = new StringBuilder().append(termBuffer, 0, termLength).toString();
+
+                // 영문이 아니거나, - 이 포함된 경우, 그대로 통과
                 if (sb.toUpperCase().equals(sb.toLowerCase()) || sb.indexOf('-') > -1) {
                     posIncAttribute.setPositionIncrement(accumPosInc);
                     accumPosInc = 0;
@@ -230,6 +240,7 @@ public final class DelimiterFilter extends TokenFilter {
                     return true;
                 }
 
+                // 분해 시도
                 iterator.setText(termBuffer, termLength);
                 iterator.next();
 

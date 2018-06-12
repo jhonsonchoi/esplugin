@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @lucene.internal
  */
-public final class CoderIterator {
+public class CoderIterator {
 
     String text;
     Iterator<String> it;
