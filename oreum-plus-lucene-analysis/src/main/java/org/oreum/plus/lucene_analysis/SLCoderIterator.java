@@ -20,6 +20,8 @@ public final class SLCoderIterator extends CoderIterator {
     Iterator<String> split(String s) {
         List<String> res = new ArrayList<>();
 
+        if ("".equals(s) || s == null) return res.iterator();
+
         String[] splits = s.split("-");
 
         for (int i = 0; i < splits.length; i++) {

@@ -21,6 +21,7 @@ public class PlusPlugin extends Plugin implements AnalysisPlugin {
         filters.put("plus_stop", TypeBasedStopTokenFilterFactory::new);
         filters.put("plus_dict", requriesAnalysisSettings(DictTokenFilterFactory::new));
         filters.put("plus_unit", requriesAnalysisSettings(UnitTokenFilterFactory::new));
+        filters.put("plus_offset", OffsetTokenFilterFactory::new);
         return filters;
     }
 }

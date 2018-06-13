@@ -32,13 +32,14 @@ public class CoderTester extends Analyzer {
 
     protected TokenStreamComponents createComponents(String s) {
         final Tokenizer source = new WhitespaceTokenizer();
-        TokenStream result = new DelimiterFilter(new CoderFilter(source), charTypeTable, flags, protoWords);
+        TokenStream result = new OffsetFilter(new DelimiterFilter(new CoderFilter(source), charTypeTable, flags, protoWords));
         return new TokenStreamComponents(source, result);
     }
 
     public static void main(String[] args) throws IOException {
 
         Analyzer analyzer = new CoderTester();
+//        TokenStream ts = analyzer.tokenStream("myfield", new StringReader("pre post"));
         TokenStream ts = analyzer.tokenStream("myfield", new StringReader("pre nt900x5t-x716a-zz10 post"));
 
         CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);

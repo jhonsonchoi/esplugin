@@ -18,6 +18,7 @@ public class CoderIterator {
      * Create a new WordDelimiterIterator operating with the supplied rules.
      */
     CoderIterator() {
+        setText(null);
     }
 
     /**
@@ -46,6 +47,8 @@ public class CoderIterator {
 
     Iterator<String> split(String s) {
         List<String> res = new ArrayList<>();
+
+        if ("".equals(s) || s == null) return res.iterator();
 
         String[] splits = s.split("-");
 
